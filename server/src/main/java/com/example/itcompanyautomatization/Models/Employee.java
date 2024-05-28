@@ -1,12 +1,6 @@
 package com.example.itcompanyautomatization.Models;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 
 @Entity // This tells Hibernate to make a table out of this class
 public class Employee {
@@ -17,7 +11,7 @@ public class Employee {
     @OneToOne(cascade = CascadeType.ALL)
     private User employeeUser;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.REFRESH)
     private EmployeeStatus status;
 
     public Employee() {

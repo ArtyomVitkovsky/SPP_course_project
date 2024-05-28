@@ -21,8 +21,10 @@ const useEmployees = (url) => {
     const handleEmployeeDataSave = async (employee) => {
         try {
             console.log("handleEmployeeDataSave employee : ", employeeData);
-            await EmployeesService.setEmployee(employee);
+            const savedEmployee = await EmployeesService.setEmployee(employee);
             getAllEmployees();
+
+            return savedEmployee;
 
         } catch (error) {
             toast.error(error?.message || 'Unknown error');

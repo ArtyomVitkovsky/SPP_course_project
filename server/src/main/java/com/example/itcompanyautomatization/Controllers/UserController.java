@@ -54,43 +54,38 @@ public class UserController {
     @PostMapping(path = "/setUser")
     public @ResponseBody ResponseEntity<?> setUser(@RequestBody UserDTO userDTO) {
         try {
-            UserDTO savedUser = saveUserData(userDTO);
+            User userToSave;
+
+            Optional<User> existedUser = getUserFromRepository(userDTO.id);
+
+            if (existedUser != null && existedUser.isPresent()) {
+                userToSave = existedUser.get();
+
+                userToSave.setFirstName(userDTO.firstName);
+                userToSave.setLastName(userDTO.lastName);
+                userToSave.setEmail(userDTO.email);
+                userToSave.setPassword(userDTO.email);
+                userToSave.setRole(userDTO.role);
+            } else {
+
+                existedUser = getUserByEmailFromRepository(userDTO.email);
+                if (existedUser != null && existedUser.isPresent()) {
+                    throw new Exception(String.format("User with same email [%s] already exists", userDTO.email));
+                }
+
+                userToSave = new User(
+                        userDTO.firstName,
+                        userDTO.lastName,
+                        userDTO.email,
+                        userDTO.password,
+                        userDTO.role);
+            }
+
+            User savedUser = userRepository.save(userToSave);
             return ResponseEntity.status(200).body(savedUser);
         } catch (Exception e) {
             return ResponseEntity.status(400).body(e.getMessage());
         }
-    }
-
-    private UserDTO saveUserData(UserDTO userDTO) throws Exception {
-        User userToSave;
-
-        Optional<User> existedUser = getUserFromRepository(userDTO.id);
-
-        if (existedUser != null && existedUser.isPresent()) {
-            userToSave = existedUser.get();
-
-            userToSave.setFirstName(userDTO.firstName);
-            userToSave.setLastName(userDTO.lastName);
-            userToSave.setEmail(userDTO.email);
-            userToSave.setPassword(userDTO.email);
-            userToSave.setRole(userDTO.role);
-        } else {
-
-            existedUser = getUserByEmailFromRepository(userDTO.email);
-            if (existedUser != null && existedUser.isPresent()) {
-                throw new Exception(String.format("User with same email [%s] already exists", userDTO.email));
-            }
-
-            userToSave = new User(
-                    userDTO.firstName,
-                    userDTO.lastName,
-                    userDTO.email,
-                    userDTO.password,
-                    userDTO.role);
-        }
-
-        User savedUser = userRepository.save(userToSave);
-        return new UserDTO(savedUser);
     }
 
     @PostMapping(path = "/deleteUser")

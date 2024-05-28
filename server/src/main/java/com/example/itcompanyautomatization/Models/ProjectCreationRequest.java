@@ -5,12 +5,12 @@ import java.util.List;
 import jakarta.persistence.*;
 
 @Entity // This tells Hibernate to make a table out of this class
-public class Project {
+public class ProjectCreationRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "client_id")
     private Client client;
 
@@ -18,29 +18,28 @@ public class Project {
     @JoinColumn(name = "manager_id")
     private Employee manager;
 
+    @OneToOne(cascade = CascadeType.REFRESH)
+    private Document document;
+
     @OneToMany(cascade = CascadeType.MERGE)
     private List<Employee> employees;
 
-    @ManyToOne(cascade = CascadeType.REFRESH)
-    @JoinColumn(name = "status_id")
-    private ProjectStatus status;
-
     private String name;
 
-    public Project() {
+    public ProjectCreationRequest() {
     }
 
-    public Project(
+    public ProjectCreationRequest(
             Client client,
             String name,
             Employee manager,
-            List<Employee> employees,
-            ProjectStatus status) {
+            Document document,
+            List<Employee> employees) {
         this.client = client;
         this.name = name;
         this.manager = manager;
+        this.document = document;
         this.employees = employees;
-        this.status = status;
     }
 
     public String getId() {
@@ -71,19 +70,19 @@ public class Project {
         this.manager = manager;
     }
 
+    public Document getDocument() {
+        return document;
+    }
+
+    public void setDocument(Document document) {
+        this.document = document;
+    }
+
     public List<Employee> getEmployees() {
         return employees;
     }
 
     public void setEmployees(List<Employee> employees) {
         this.employees = employees;
-    }
-
-    public ProjectStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ProjectStatus status) {
-        this.status = status;
     }
 }

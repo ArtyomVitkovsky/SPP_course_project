@@ -22,6 +22,7 @@ const useUsers = (url) => {
     const handleUserDataSave = async (user) => {
         try {
             const savedUser = await setUser(user);
+            console.log("savedUser : ", savedUser)
             setUserData(savedUser);
             getData();
 

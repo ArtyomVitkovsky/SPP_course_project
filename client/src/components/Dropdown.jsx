@@ -52,7 +52,7 @@ function Dropdown({ index, label, placeHolder, value, values = [], valuesToExclu
                 onClick={() => onDropDownClickHandler()} onBlur={() => { setTimeout(() => setIsShowValues(false), 100) }}>
                 <span className='truncate'>
                     {selectedValue == null
-                        ? value == null ? placeHolder : value
+                        ? value.value == null ? placeHolder : value.value
                         : selectedValue}
                 </span>
                 {

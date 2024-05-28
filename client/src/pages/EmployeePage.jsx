@@ -6,9 +6,8 @@ import useUsers from '../hooks/useUsers';
 import useClients from '../hooks/useClients';
 import useEmployees from '../hooks/useEmployees';
 import * as constants from '../utilities/constants';
-import useProjects from '../hooks/useProjects';
 
-function ClientPage() {
+function EmployeePage() {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -24,21 +23,22 @@ function ClientPage() {
     } = useUsers();
 
     const {
-        isClientsLoading,
-        clients,
-        clientData,
-        handleClientDataChange,
-        handleClientSelect,
-        handleClientDataSave
-    } = useClients();
+        isEmployeesLoading,
+        employees,
+        employeeData,
+        employeeStatuses,
+        handleEmployeeDataChange,
+        handleEmployeeSelect,
+        handleEmployeeDataSave
+    } = useEmployees();
 
     const [isLoading, setIsLoading] = useState(true);
     const [isDataLoading, setIsDataLoading] = useState(true);
     const [isUserStorageReceived, setIsUserStorageReceived] = useState(false);
 
     useEffect(() => {
-        setIsDataLoading(isUsersLoading || isClientsLoading);
-    }, [isUsersLoading, isClientsLoading])
+        setIsDataLoading(isUsersLoading || isEmployeesLoading);
+    }, [isUsersLoading, isEmployeesLoading])
 
     useEffect(() => {
         setIsLoading(isDataLoading || !isUserStorageReceived);
@@ -50,22 +50,24 @@ function ClientPage() {
         const authorizedUserJSON = sessionStorage.getItem(constants.authorizedUser);
 
         let authorizedUser = userData;
-        let authorizedUserClient = {};
+        let authorizedUserEmployee = {};
 
         if (authorizedUserJSON) authorizedUser = JSON.parse(authorizedUserJSON);
 
-        if (clients.length > 0) authorizedUserClient = clients.find((client) => client.clientUser.id == authorizedUser.id);
+        if (employees.length > 0) authorizedUserEmployee = employees.find((employee) => employee.employeeUser.id == authorizedUser.id);
 
         if (authorizedUser) handleUserSelect(authorizedUser);
-        if (authorizedUserClient) handleClientSelect(authorizedUserClient);
+        if (authorizedUserEmployee) handleEmployeeSelect(authorizedUserEmployee);
+        
+        console.log(`setIsUserStorageReceived(${!!authorizedUser.id}) user id : ${authorizedUser.id}`);
 
         setIsUserStorageReceived(!!authorizedUser.id)
     }, [isDataLoading])
 
 
     const menuItems = [
-        { name: 'Sended', text: 'Sended', iconName: 'PaperAirplaneIcon', iconClassName: 'PaperAirplaneIcon.js', url: '/clientPage/sended' },
-        { name: 'Projects', text: 'Projects', iconName: 'CodeBracketIcon', iconClassName: 'CodeBracketIcon.js', url: '/clientPage/projects' },
+        { name: 'Inbox', text: 'Inbox', iconName: 'EnvelopeIcon', iconClassName: 'EnvelopeIcon.js', url: '/employeePage/inbox' },
+        { name: 'Projects', text: 'Projects', iconName: 'CodeBracketIcon', iconClassName: 'CodeBracketIcon.js', url: '/employeePage/projects' },
     ]
 
     const currentMenuItem = menuItems.find((item) => item.url === location.pathname)
@@ -86,7 +88,7 @@ function ClientPage() {
                 <span>Loading...</span>
             </div>
             : <div className='py-10 h-full'>
-                <PageCard headerText={clientData.companyName}>
+                <PageCard headerText={employeeData.status.status}>
                     <VerticalMenu menuItems={menuItems} presettedValue={selectedMenuItem} onItemSelectAction={setSelecteMenuItemHandler}></VerticalMenu>
                     <Outlet />
                 </PageCard>
@@ -94,4 +96,4 @@ function ClientPage() {
     )
 }
 
-export default ClientPage;
+export default EmployeePage;

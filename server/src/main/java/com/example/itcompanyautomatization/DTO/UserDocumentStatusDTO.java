@@ -9,7 +9,7 @@ public class UserDocumentStatusDTO {
     public User user;
     public Boolean status;
 
-    public UserDocumentStatusDTO(String id, Document document, User user,  Boolean status) {
+    public UserDocumentStatusDTO(String id, Document document, User user, Boolean status) {
         this.id = id;
         this.document = document;
         this.user = user;

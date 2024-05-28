@@ -78,20 +78,20 @@ public class DocumentController {
                         getDefaultStatus());
 
                 firstUserDocumentStatus = createNewUserDocumentStatus(
-                        new UserDocumentStatusDTO(null, documentToSave, documentDTO.sender, false));
+                        new UserDocumentStatusDTO(null, documentToSave, documentDTO.sender, true));
                 secondUserDocumentStatus = createNewUserDocumentStatus(
                         new UserDocumentStatusDTO(null, documentToSave, documentDTO.receiver, false));
 
             }
 
-            documentRepository.save(documentToSave);
+            Document document = documentRepository.save(documentToSave);
 
             if (firstUserDocumentStatus != null)
                 userDocumentStatusRepository.save(firstUserDocumentStatus);
             if (secondUserDocumentStatus != null)
                 userDocumentStatusRepository.save(secondUserDocumentStatus);
 
-            return ResponseEntity.status(200).body("Saved");
+            return ResponseEntity.status(200).body(document);
         } catch (Exception e) {
             return ResponseEntity.status(400).body(e.getMessage());
         }
@@ -109,9 +109,6 @@ public class DocumentController {
         }
 
         String statusStr = status.toString();
-        System.out.println("UserDocumentStatus first : " + first.getStatus());
-        System.out.println("UserDocumentStatus second : " + second.getStatus());
-        System.out.println("Calculated Document Status : " + statusStr);
         Optional<DocumentStatus> documentStatusResult = documentStatusRepository.findByStatus(statusStr);
 
         if (documentStatusResult == null || !documentStatusResult.isPresent()) {
@@ -161,8 +158,7 @@ public class DocumentController {
     }
 
     @PostMapping(path = "/setUserDocumentStatus")
-    public @ResponseBody ResponseEntity<?> setUserDocumentStatus(
-            @RequestBody UserDocumentStatusDTO userDocumentStatusDTO) {
+    public @ResponseBody ResponseEntity<?> setUserDocumentStatus(@RequestBody UserDocumentStatusDTO userDocumentStatusDTO) {
         try {
             UserDocumentStatus userDocumentStatusToSave;
 

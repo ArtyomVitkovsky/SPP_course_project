@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 const useDocuments = (url) => {
     const [documents, setDocuments] = useState([]);
     const [userDocumentStatuses, setUserDocumentStatuses] = useState([]);
-    const [isLoading, setIsLoading] = useState([]);
+    const [isDocumentsLoading, setIsDocumentsLoading] = useState([]);
 
     const [documentData, setDocumentData] = useState({});
     const [selectedDocumentStatuses, setSelectedDocumentStatuses] = useState([]);
@@ -28,9 +28,11 @@ const useDocuments = (url) => {
 
     const handleDocumentDataSave = async (document) => {
         try {
-            await setDocument(document);
+            const result = await setDocument(document);
 
             getData();
+
+            return result;
         } catch (error) {
             toast.error(error?.message || 'Unknown error');
         }
@@ -68,7 +70,7 @@ const useDocuments = (url) => {
     }
 
     const getData = async () => {
-        setIsLoading(true);
+        setIsDocumentsLoading(true);
         try {
             await getAllDocuments();
             await getAllUserDocumentStatuses();
@@ -76,7 +78,7 @@ const useDocuments = (url) => {
         } catch (error) {
             toast.error(error?.message || 'Unknown error');
         } finally {
-            setIsLoading(false);
+            setIsDocumentsLoading(false);
         }
     }
 
@@ -85,7 +87,7 @@ const useDocuments = (url) => {
     }, []);
 
     return {
-        isLoading,
+        isDocumentsLoading,
         documents,
         documentData,
         userDocumentStatuses,

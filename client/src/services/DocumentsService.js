@@ -12,7 +12,9 @@ export const getDocuments = async () => {
 
 export const setDocument = async (documentData) => {
     try {
-        await axios.post(constants.setDocument, documentData);
+        const result = await axios.post(constants.setDocument, documentData);
+
+        return result.data;
     } catch (error) {
         throw new Error(error?.response?.data || 'Unknown error');
     }

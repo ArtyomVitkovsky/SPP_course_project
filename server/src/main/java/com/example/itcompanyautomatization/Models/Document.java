@@ -24,7 +24,7 @@ public class Document {
     @OneToOne(cascade = CascadeType.MERGE)
     private User receiver;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "status_id")
     private DocumentStatus status;
 

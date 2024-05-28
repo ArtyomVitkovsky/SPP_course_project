@@ -122,21 +122,21 @@ function RegistrationPage() {
         if (userRole.role == 'Client') {
             clientData.clientUser = user;
             const client = await handleClientDataSave(clientData);
+            if (!client) handleUserDelete(user)
             handleClientSelect(client);
         }
         else if (userRole.role == 'Employee') {
             employeeData.employeeUser = user;
             employeeData.status = employeeStatuses.find((status) => status.status == 'Idle');
-            console.log("employeeData : ", employeeData);
-            await handleEmployeeDataSave(employeeData);
+            const employee = await handleEmployeeDataSave(employeeData);
+            if (!employee) handleUserDelete(user)
             handleEmployeeSelect(employee);
         }
 
-        console.log("userData : ", userData)
+        sessionStorage.setItem(constants.authorizedUser, JSON.stringify(user));
 
-        sessionStorage.setItem(constants.authorizedUser, JSON.stringify(userData));
-
-        navigate(constants.userRoleToPage[userData.role.role])
+        const navigationUrl = constants.userRoleToPage[userData.role.role];
+        navigate(navigationUrl)
     }
 
     return (

@@ -4,8 +4,9 @@ import { getDocument } from "../../utilities/getDocumentFromBase64"
 import ButtonIcon from "../ButtonIcon";
 import Icon from "../Icon";
 import { useEffect } from "react";
+import DocumentPreview from "./DocumentPreview";
 
-function DocumentViewModal({ documentData = {}, selectedDocumentUserStatuses = [], onSignClick = () => { }, onDoneClick = () => { }, onCloseClick = () => { } }) {
+function DocumentViewModal({ user, documentData = {}, selectedDocumentUserStatuses = [], onSignClick = () => { }, onDoneClick = () => { }, onCloseClick = () => { } }) {
 
     const buttons = [
         { name: "Done", isLight: false, width_rem: 6, height_rem: 2.5, onClickAction: () => onDoneClick(documentData) }
@@ -42,28 +43,9 @@ function DocumentViewModal({ documentData = {}, selectedDocumentUserStatuses = [
             </div>
     }
 
-    const getParticipants = () => {
-        return [documentData.firstParticipant, documentData.secondParticipant];
-    }
-
     return (
         <Modal className="overflow-auto" width="auto" title="Document view" onCloseClick={onCloseClick} buttons={buttons}>
-            <div className="flex flex-col gap-4 w-full border-b-2 pb-3 my-3">
-                <span>{documentData.name}</span>
-            </div>
-            <div className="overflow-auto h-[450px]">
-                {/* <FileViewer fileType="docx" filePath={getDocument(documentData.content)} /> */}
-            </div>
-            <div className="overflow-auto flex flex-col gap-4 h-[150px] p-4">
-                {
-                    getParticipants().map((participant, i) => {
-                        return <div key={i} className="flex justify-between w-[400px] py-2">
-                            <span className="align-middle center">{participant.firstName + " " + participant.lastName}</span>
-                            {getStatusElement(participant)}
-                        </div>
-                    })
-                }
-            </div>
+            <DocumentPreview user={user} base64Content={documentData.content}/>
         </Modal>
     )
 }

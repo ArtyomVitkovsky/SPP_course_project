@@ -1,6 +1,6 @@
-function InputField({ type, label, placeHolder, value = '', onValueChange, required, customClassName }) {
+function InputField({ type, label, placeHolder, value = '', onFocus = () => { }, onValueChange, required, customClassName }) {
     return (
-        <div className={customClassName}>
+        <div className={customClassName} onClick={onFocus}>
             <label className="block mb-2 text-sm font-medium text-gray-900">{label}</label>
             <input type={type} className={
                 ("bg-gray-50 border border-gray-300 " +

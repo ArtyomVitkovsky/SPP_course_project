@@ -26,3 +26,8 @@ export const getEmployeeStatuses = api + 'employees/getEmployeeStatuses';
 export const setClient = api + 'clients/setClient';
 export const getClients = api + 'clients/getClients';
 
+export const setProject = api + 'projects/setProject';
+export const getProjects = api + 'projects/getProjects';
+export const getProjectStatuses = api + 'projects/getProjectStatuses';
+export const getProjectCreationRequests = api + 'projects/getProjectCreationRequests';
+export const setProjectCreationRequest = api + 'projects/setProjectCreationRequest';

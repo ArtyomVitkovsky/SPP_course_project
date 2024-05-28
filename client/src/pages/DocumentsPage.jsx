@@ -5,10 +5,11 @@ import Table from "../components/Table";
 import DocumentDetailsModal from '../components/Documents/DocumentDetailsModal'
 import DocumentViewModal from '../components/Documents/DocumentViewModal'
 import Avatar from "../components/Avatar"
+import * as constants from "../utilities/constants"
 
-function DocumentsPage({ user, isSendedDocuments }) {
+function DocumentsPage({ isSendedDocuments }) {
     const {
-        isLoading,
+        isDocumentsLoading,
         documents,
         documentData,
         userDocumentStatuses,
@@ -20,9 +21,17 @@ function DocumentsPage({ user, isSendedDocuments }) {
         handleDocumentSign
     } = useDocuments();
 
+    const [isLoading, setIsLoading] = useState(true);
+    const [authorizedUser, setAuthorizedUser] = useState({});
     const [isShowEditModal, setIsShowEditModal] = useState(false);
     const [isShowViewModal, setIsShowViewModal] = useState(false);
     const [isDocumentCreation, setIsDocumentCreation] = useState(false);
+
+    useEffect(() => {
+        setAuthorizedUser(JSON.parse(sessionStorage.getItem(constants.authorizedUser)));
+
+        setIsLoading(false);
+    }, [isDocumentsLoading])
 
     const onCloseEditModalClick = () => {
         setIsShowEditModal(false);
@@ -42,8 +51,13 @@ function DocumentsPage({ user, isSendedDocuments }) {
     }
 
     const onSaveButtonClick = async (documentData) => {
-        await handleDocumentDataSave(documentData);
+
+        console.log('onSaveButtonClick documentData : ', documentData)
+
+        const document = await handleDocumentDataSave(documentData);
         onCloseEditModalClick();
+
+        return document;
     }
 
     const onDeleteClick = async (document) => {
@@ -60,8 +74,8 @@ function DocumentsPage({ user, isSendedDocuments }) {
         setIsShowViewModal(true);
     }
 
-    const onSignClick = (userDocumentStatus) => {
-        handleDocumentSign(userDocumentStatus);
+    const onSignClick = async (userDocumentStatus) => {
+        await handleDocumentSign(userDocumentStatus);
     }
 
     const columns = [
@@ -74,11 +88,16 @@ function DocumentsPage({ user, isSendedDocuments }) {
         "id", "content", "participants", "status"
     ]
 
-    const actionColumns = [
-        { type: 'outline', title: 'Edit', iconName: 'Cog6ToothIcon', action: (document) => onEditClick(document) },
-        { type: 'outline', title: 'Delete', iconName: 'TrashIcon', action: (document) => onDeleteClick(document) },
-        { type: 'outline', title: 'Sign', iconName: 'PencilSquareIcon', action: (document) => onViewClick(document) }
-    ]
+    const getActionColumns = () => {
+        return authorizedUser.role.role == 'Client'
+            ? [
+                { type: 'outline', title: 'Edit', iconName: 'Cog6ToothIcon', action: (document) => onEditClick(document) },
+                { type: 'outline', title: 'Delete', iconName: 'TrashIcon', action: (document) => onDeleteClick(document) },
+            ]
+            : [
+                { type: 'outline', title: 'Sign', iconName: 'PencilSquareIcon', action: (document) => onViewClick(document) }
+            ]
+    }
 
     const getExtraColumns = () => {
         const extraColumnsData = {};
@@ -93,7 +112,7 @@ function DocumentsPage({ user, isSendedDocuments }) {
         const statuses = {};
 
         documents.forEach((document) => {
-            if (isSendedDocuments ? document.sender.id == user.id : document.receiver.id == user.id)
+            if (isSendedDocuments ? document.sender.id == authorizedUser.id : document.receiver.id == authorizedUser.id)
                 statuses[document.id] =
                     <span key={document.id}>
                         {document.status.status}
@@ -107,7 +126,7 @@ function DocumentsPage({ user, isSendedDocuments }) {
         const participantAvatars = {};
 
         documents.forEach((document) => {
-            if (isSendedDocuments ? document.sender.id == user.id : document.receiver.id == user.id) {
+            if (isSendedDocuments ? document.sender.id == authorizedUser.id : document.receiver.id == authorizedUser.id) {
                 const participants = [document.firstParticipant, document.secondParticipant];
 
                 let otherUsersCount = 0;
@@ -142,56 +161,68 @@ function DocumentsPage({ user, isSendedDocuments }) {
     const onAddDocumentClick = () => {
         setIsShowEditModal(true);
         setIsDocumentCreation(true);
-        documentData.sender = user;
+        documentData.sender = authorizedUser;
+    }
+
+    const getDocuments = () => {
+        return documents.filter((document) => isSendedDocuments
+            ? document.sender.id == authorizedUser.id
+            : document.receiver.id == authorizedUser.id)
     }
 
     return (
-        <div className="w-full h-full">
-
-            {
-                isSendedDocuments
-                    ?
-                    <div className="w-full bg-blue-400 p-2 border-t-slate-50 border-solid border-t rounded-lg">
-                        <div className="w-[150px] h-full">
-                            <Button
-                                name="Add Document"
-                                isLight={true}
-                                width_rem={10} height_rem={2}
-                                onClickAction={onAddDocumentClick}>
-                            </Button>
+        isLoading
+            ? <div className='flex w-full h-full items-center justify-center'>
+                <span>Loading...</span>
+            </div>
+            : <div className="w-full h-full">
+                {
+                    isSendedDocuments
+                        ?
+                        <div className="w-full bg-blue-400 p-2 border-t-slate-50 border-solid border-t rounded-lg">
+                            <div className="w-[150px] h-full">
+                                <Button
+                                    name="Add Document"
+                                    isLight={true}
+                                    width_rem={10} height_rem={2}
+                                    onClickAction={onAddDocumentClick}>
+                                </Button>
+                            </div>
                         </div>
-                    </div>
-                    : null
-            }
-            <Table data={documents.find((document) => isSendedDocuments ? document.sender.id == user.id : document.receiver.id == user.id)}
-                columns={columns}
-                extraColumns={extraColumns}
-                extraColumnsData={getExtraColumns()}
-                actionsColumns={actionColumns}
-                columnsToExclude={columnsToExclude}>
-            </Table>
+                        : null
+                }
+                <Table data={getDocuments()}
+                    columns={columns}
+                    extraColumns={extraColumns}
+                    extraColumnsData={getExtraColumns()}
+                    actionsColumns={getActionColumns()}
+                    columnsToExclude={columnsToExclude}>
+                </Table>
 
-            {
-                isShowEditModal &&
-                <DocumentDetailsModal
-                    documentData={documentData}
-                    onDataChange={handleDocumentDataChange}
-                    onSaveClick={onSaveButtonClick}
-                    onCloseClick={onCloseEditModalClick}>
-                </DocumentDetailsModal>
-            }
+                {
+                    isShowEditModal &&
+                    <DocumentDetailsModal
+                        user={authorizedUser}
+                        documentData={documentData}
+                        selectedDocumentUserStatuses={selectedDocumentStatuses}
+                        onDataChange={handleDocumentDataChange}
+                        onSaveClick={onSaveButtonClick}
+                        onCloseClick={onCloseEditModalClick}>
+                    </DocumentDetailsModal>
+                }
 
-            {
-                isShowViewModal &&
-                <DocumentViewModal
-                    documentData={documentData}
-                    selectedDocumentUserStatuses={selectedDocumentStatuses}
-                    onSignClick={onSignClick}
-                    onDoneClick={onViewModalDoneClick}
-                    onCloseClick={onCloseViewModalClick}>
-                </DocumentViewModal>
-            }
-        </div >
+                {
+                    isShowViewModal &&
+                    <DocumentViewModal
+                        user={authorizedUser}
+                        documentData={documentData}
+                        selectedDocumentUserStatuses={selectedDocumentStatuses}
+                        onSignClick={onSignClick}
+                        onDoneClick={onViewModalDoneClick}
+                        onCloseClick={onCloseViewModalClick}>
+                    </DocumentViewModal>
+                }
+            </div >
     )
 }
 

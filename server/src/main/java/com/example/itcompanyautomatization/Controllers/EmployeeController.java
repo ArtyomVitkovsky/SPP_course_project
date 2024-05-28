@@ -7,19 +7,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.itcompanyautomatization.DTO.ClientDTO;
-import com.example.itcompanyautomatization.DTO.EmployeeDTO;
-import com.example.itcompanyautomatization.DTO.EmployeeStatusDTO;
-import com.example.itcompanyautomatization.Models.Employee;
-import com.example.itcompanyautomatization.Models.EmployeeStatus;
-import com.example.itcompanyautomatization.Models.User;
+import com.example.itcompanyautomatization.DTO.*;
+import com.example.itcompanyautomatization.Models.*;
 import com.example.itcompanyautomatization.Repositories.Interface.IEmployeeRepository;
 import com.example.itcompanyautomatization.Repositories.Interface.IEmployeeStatusRepository;
 import com.example.itcompanyautomatization.Repositories.Interface.IUserRepository;
@@ -69,8 +60,8 @@ public class EmployeeController {
                         employeeStatusResult.get());
             }
 
-            employeeRepository.save(employee);
-            return ResponseEntity.status(200).body("Saved");
+            Employee savedEmployee = employeeRepository.save(employee);
+            return ResponseEntity.status(200).body(savedEmployee);
         } catch (Exception e) {
             return ResponseEntity.status(400).body(e.getMessage());
         }

@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import ButtonIcon from "./ButtonIcon";
 
 const Table = ({ data = [], columns = [], extraColumns = [], extraColumnsData = [], actionsColumns = [], columnsToExclude = [], columnsToMark = [] }) => {
-
   return (
     <div className="flex flex-col h-[calc(100vh-15rem)]">
       <div className="flex-grow overflow-y-auto">
