@@ -18,10 +18,10 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @OneToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private User sender;
 
-    @OneToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private User receiver;
 
     @ManyToOne(cascade = CascadeType.REFRESH)

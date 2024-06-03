@@ -44,3 +44,12 @@ export const setUserDocumentStatus = async (userDocumentData) => {
         throw new Error(error?.response?.data || 'Unknown error');
     }
 }
+
+export const getDocumentNotifications = async () => {
+    try {
+        const result = await axios.get(constants.getDocumentNotifications);
+        return result.data;
+    } catch (error) {
+        throw new Error(error?.response?.data || 'Unknown error');
+    }
+}

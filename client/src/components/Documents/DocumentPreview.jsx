@@ -10,7 +10,7 @@ import Button from '../Button'
 import SignatureModal from '../DocumentsConstructor/SuppliesPage/components/SignatureModal'
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-function DocumentPreview({ user, base64Content, projectCreationRequestData = {}, onGenerateClick = () => { }, onSign = () => { } }) {
+function DocumentPreview({ user, base64Content, projectCreationRequestData = {}, isRegeneratable = true, onGenerateClick = () => { }, onSign = () => { } }) {
 
     const [currentFile, setCurrentFile] = useState(null);
     const [pages, setPages] = useState(null);
@@ -48,13 +48,15 @@ function DocumentPreview({ user, base64Content, projectCreationRequestData = {},
             ? await pdfDocumentService.generateProjectContractDocument(signature, projectCreationRequestData)
             : await pdfDocumentService.signDocumentByReceiver(currentFile, signature);
 
-        setCurrentFile(file);
-        setIsSignatureModalOpen(false);
+        const data = await pdfDocumentService.getStringFromFile(file);
 
-        const data = await pdfDocumentService.getStringFromFile(currentFile);
+        setCurrentFile(file);
+
         onGenerateClick(data);
 
-        onSign(signature);
+        onSign(data);
+
+        setIsSignatureModalOpen(false);
     };
 
     const handleDeleteDocument = () => {
@@ -85,7 +87,7 @@ function DocumentPreview({ user, base64Content, projectCreationRequestData = {},
     return (
         <div>
             <div className='flex flex-row gap-2 mb-2'>
-                <div className='w-full h-8'><Button name={'Generate Document'} isLight={true} onClickAction={generateDocumentClick} /></div>
+                {isRegeneratable && <div className='w-full h-8'><Button name={'Generate Document'} isLight={true} onClickAction={generateDocumentClick} /></div>}
                 <div className='w-full h-8'><Button name={'Download Document'} isLight={true} onClickAction={download} /></div>
             </div>
             <div className='bg-white rounded-lg flex flex-col min-w-[30rem]'>

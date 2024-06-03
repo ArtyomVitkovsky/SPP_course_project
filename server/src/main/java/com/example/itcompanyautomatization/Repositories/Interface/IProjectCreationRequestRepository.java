@@ -8,4 +8,6 @@ import com.example.itcompanyautomatization.Models.ProjectCreationRequest;
 
 public interface IProjectCreationRequestRepository extends CrudRepository<ProjectCreationRequest, String> {
     List<ProjectCreationRequest> findAll();
+    ProjectCreationRequest findByDocumentId(String documentId);
+
 }

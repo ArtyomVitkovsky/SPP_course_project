@@ -7,31 +7,38 @@ import DocumentViewModal from '../components/Documents/DocumentViewModal'
 import Avatar from "../components/Avatar"
 import * as constants from "../utilities/constants"
 
-function DocumentsPage({ isSendedDocuments }) {
+import { useSubscription } from 'react-stomp-hooks';
+import toast from "react-hot-toast";
+import useProjects from "../hooks/useProjects";
+
+function DocumentsPage({ user, isSendedDocuments }) {
+
+    useSubscription(`/topic/notif/${user?.id}`, async => {
+        getNotifications();
+    });
+
     const {
-        isDocumentsLoading,
-        documents,
-        documentData,
-        userDocumentStatuses,
-        selectedDocumentStatuses,
-        handleDocumentDataChange,
-        handleDocumentSelect,
-        handleDocumentDataSave,
-        handleDocumentDelete,
-        handleDocumentSign
+        isDocumentsLoading, documents, documentData, userDocumentStatuses, selectedDocumentStatuses, documentNotifications,
+        getData, handleDocumentDataChange, handleDocumentSelect, handleDocumentDataSave, handleDocumentDelete, handleDocumentSign
     } = useDocuments();
 
+    const {
+        isProjectsLoading, projects, projectStatuses, projectCreationRequests, projectData,
+        handleProjectDataChange, handleProjectSelect, handleProjectDataSave, handleProjectCreationRequestSave
+    } = useProjects();
+
     const [isLoading, setIsLoading] = useState(true);
-    const [authorizedUser, setAuthorizedUser] = useState({});
     const [isShowEditModal, setIsShowEditModal] = useState(false);
     const [isShowViewModal, setIsShowViewModal] = useState(false);
-    const [isDocumentCreation, setIsDocumentCreation] = useState(false);
 
     useEffect(() => {
-        setAuthorizedUser(JSON.parse(sessionStorage.getItem(constants.authorizedUser)));
+        setIsLoading(isDocumentsLoading || isProjectsLoading);
+    }, [isDocumentsLoading, isProjectsLoading])
 
-        setIsLoading(false);
-    }, [isDocumentsLoading])
+    const getNotifications = async () => {
+        await getData();
+        setIsDocumentNotificationReceived(false);
+    }
 
     const onCloseEditModalClick = () => {
         setIsShowEditModal(false);
@@ -51,9 +58,6 @@ function DocumentsPage({ isSendedDocuments }) {
     }
 
     const onSaveButtonClick = async (documentData) => {
-
-        console.log('onSaveButtonClick documentData : ', documentData)
-
         const document = await handleDocumentDataSave(documentData);
         onCloseEditModalClick();
 
@@ -76,6 +80,27 @@ function DocumentsPage({ isSendedDocuments }) {
 
     const onSignClick = async (userDocumentStatus) => {
         await handleDocumentSign(userDocumentStatus);
+
+        console.log("userDocumentStatus : ", userDocumentStatus);
+        console.log("projectCreationRequests : ", projectCreationRequests);
+
+        const projectCreationRequest = projectCreationRequests.find(
+            request => request.document.id == userDocumentStatus.document.id
+                && request.manager.employeeUser.id == userDocumentStatus.user.id
+        );
+
+        console.log("projectCreationRequest : ", projectCreationRequest);
+
+        const project = {
+            client: projectCreationRequest.client,
+            manager: projectCreationRequest.manager,
+            employees: projectCreationRequest.employees,
+            name: projectCreationRequest.name
+        };
+
+        console.log("project : ", project);
+
+        handleProjectDataSave(project);
     }
 
     const columns = [
@@ -89,7 +114,7 @@ function DocumentsPage({ isSendedDocuments }) {
     ]
 
     const getActionColumns = () => {
-        return authorizedUser.role.role == 'Client'
+        return user.role.role == 'Client'
             ? [
                 { type: 'outline', title: 'Edit', iconName: 'Cog6ToothIcon', action: (document) => onEditClick(document) },
                 { type: 'outline', title: 'Delete', iconName: 'TrashIcon', action: (document) => onDeleteClick(document) },
@@ -112,7 +137,7 @@ function DocumentsPage({ isSendedDocuments }) {
         const statuses = {};
 
         documents.forEach((document) => {
-            if (isSendedDocuments ? document.sender.id == authorizedUser.id : document.receiver.id == authorizedUser.id)
+            if (isSendedDocuments ? document.sender.id == user.id : document.receiver.id == user.id)
                 statuses[document.id] =
                     <span key={document.id}>
                         {document.status.status}
@@ -126,8 +151,10 @@ function DocumentsPage({ isSendedDocuments }) {
         const participantAvatars = {};
 
         documents.forEach((document) => {
-            if (isSendedDocuments ? document.sender.id == authorizedUser.id : document.receiver.id == authorizedUser.id) {
-                const participants = [document.firstParticipant, document.secondParticipant];
+            if (isSendedDocuments ? document.sender.id == user.id : document.receiver.id == user.id) {
+                const participants = [document.sender, document.receiver];
+
+                console.log("participants : ", participants);
 
                 let otherUsersCount = 0;
                 participantAvatars[document.id] =
@@ -160,14 +187,13 @@ function DocumentsPage({ isSendedDocuments }) {
 
     const onAddDocumentClick = () => {
         setIsShowEditModal(true);
-        setIsDocumentCreation(true);
-        documentData.sender = authorizedUser;
+        documentData.sender = user;
     }
 
     const getDocuments = () => {
         return documents.filter((document) => isSendedDocuments
-            ? document.sender.id == authorizedUser.id
-            : document.receiver.id == authorizedUser.id)
+            ? document.sender.id == user.id
+            : document.receiver.id == user.id)
     }
 
     return (
@@ -179,7 +205,7 @@ function DocumentsPage({ isSendedDocuments }) {
                 {
                     isSendedDocuments
                         ?
-                        <div className="w-full bg-blue-400 p-2 border-t-slate-50 border-solid border-t rounded-lg">
+                        <div className="w-full bg-blue-400 p-2 border-solid rounded-b-lg">
                             <div className="w-[150px] h-full">
                                 <Button
                                     name="Add Document"
@@ -202,7 +228,7 @@ function DocumentsPage({ isSendedDocuments }) {
                 {
                     isShowEditModal &&
                     <DocumentDetailsModal
-                        user={authorizedUser}
+                        user={user}
                         documentData={documentData}
                         selectedDocumentUserStatuses={selectedDocumentStatuses}
                         onDataChange={handleDocumentDataChange}
@@ -214,7 +240,7 @@ function DocumentsPage({ isSendedDocuments }) {
                 {
                     isShowViewModal &&
                     <DocumentViewModal
-                        user={authorizedUser}
+                        user={user}
                         documentData={documentData}
                         selectedDocumentUserStatuses={selectedDocumentStatuses}
                         onSignClick={onSignClick}

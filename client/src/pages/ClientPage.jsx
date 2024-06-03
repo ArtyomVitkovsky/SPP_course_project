@@ -8,7 +8,7 @@ import useEmployees from '../hooks/useEmployees';
 import * as constants from '../utilities/constants';
 import useProjects from '../hooks/useProjects';
 
-function ClientPage() {
+function ClientPage({ user }) {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -47,19 +47,14 @@ function ClientPage() {
     useEffect(() => {
         if (isDataLoading) return;
 
-        const authorizedUserJSON = sessionStorage.getItem(constants.authorizedUser);
-
-        let authorizedUser = userData;
         let authorizedUserClient = {};
 
-        if (authorizedUserJSON) authorizedUser = JSON.parse(authorizedUserJSON);
+        if (clients.length > 0) authorizedUserClient = clients.find((client) => client.clientUser.id == user.id);
 
-        if (clients.length > 0) authorizedUserClient = clients.find((client) => client.clientUser.id == authorizedUser.id);
-
-        if (authorizedUser) handleUserSelect(authorizedUser);
+        if (user) handleUserSelect(user);
         if (authorizedUserClient) handleClientSelect(authorizedUserClient);
 
-        setIsUserStorageReceived(!!authorizedUser.id)
+        setIsUserStorageReceived(!!user.id)
     }, [isDataLoading])
 
 

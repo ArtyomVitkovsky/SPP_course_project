@@ -8,8 +8,9 @@ import InputField from '../../components/InputField';
 import Button from '../../components/Button';
 import Dropdown from '../../components/Dropdown';
 import * as constants from '../../utilities/constants';
+import { values } from 'pdf-lib';
 
-function RegistrationPage() {
+function RegistrationPage({ onUserChanged }) {
     const navigate = useNavigate();
 
     const {
@@ -46,18 +47,23 @@ function RegistrationPage() {
 
     useEffect(() => {
         setIsLoading(isUsersLoading || isClientsLoading || isEmployeesLoading);
-    }, [isUsersLoading, isClientsLoading])
+    }, [isUsersLoading, isClientsLoading, isEmployeesLoading])
 
     const [userRole, setUserRole] = useState({});
 
     useEffect(() => {
         if (isLoading) return;
 
-        const defaultRole = userRoles.find((role) => role.role == 'Client');
+        const defaultRole = userRoles.find((role) => role.role == 'Employee');
 
         if (defaultRole) {
             setUserRole(defaultRole);
             userData.role = defaultRole;
+
+            roleDropdownData.value = {
+                key: userRole.id,
+                value: userRole.role
+            };
         }
     }, [isLoading])
 
@@ -65,7 +71,10 @@ function RegistrationPage() {
         index: 0,
         label: 'Who are you ?',
         placeHolder: 'Select role',
-        value: userRole.role
+        value: {
+            key: userRole.id,
+            value: userRole.role
+        }
     };
 
     const getRoles = () => {
@@ -135,6 +144,8 @@ function RegistrationPage() {
 
         sessionStorage.setItem(constants.authorizedUser, JSON.stringify(user));
 
+        onUserChanged(user);
+
         const navigationUrl = constants.userRoleToPage[userData.role.role];
         navigate(navigationUrl)
     }
@@ -143,7 +154,9 @@ function RegistrationPage() {
         <div className='w-full h-full'>
             {
                 isLoading
-                    ? null
+                    ? <div className='flex w-full h-full items-center justify-center'>
+                        <span>Loading...</span>
+                    </div>
                     : <div className='w-full h-full'>
                         <div className='flex flex-col gap-4 w-full h-full items-center justify-center'>
                             <div className='flex justify-center items-center w-[300px] h-12'>

@@ -8,7 +8,7 @@ import Button from "../../components/Button";
 import * as constants from '../../utilities/constants';
 
 
-function AuthorizationPage() {
+function AuthorizationPage({ onUserChanged }) {
     const navigate = useNavigate();
 
     const {
@@ -58,6 +58,7 @@ function AuthorizationPage() {
         }
 
         sessionStorage.setItem(constants.authorizedUser, JSON.stringify(existedUser));
+        onUserChanged(existedUser);
 
         navigate(constants.userRoleToPage[existedUser.role.role])
     }

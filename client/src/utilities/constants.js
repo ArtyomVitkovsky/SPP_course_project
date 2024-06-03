@@ -5,13 +5,14 @@ export const userRoleToPage = {
     Employee: '/employeePage'
 }
 
-export const authorizedUser = 'localStorage/authorizedUser';
+export const authorizedUser = 'sessionStorage/authorizedUser';
 
 export const getDocuments = api + 'documents/getDocuments';
 export const setDocument = api + 'documents/setDocument';
 export const deleteDocument = api + 'documents/deleteDocument';
 export const getUserDocumentStatuses = api + 'documents/getUserDocumentStatuses';
 export const setUserDocumentStatus = api + 'documents/setUserDocumentStatus';
+export const getDocumentNotifications = api + 'documents/getDocumentNotifications';
 
 export const getUsers = api + 'users/getUsers';
 export const setUser = api + 'users/setUser';

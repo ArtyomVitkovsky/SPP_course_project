@@ -7,7 +7,8 @@ import useClients from '../hooks/useClients';
 import useEmployees from '../hooks/useEmployees';
 import * as constants from '../utilities/constants';
 
-function EmployeePage() {
+
+function EmployeePage({ user }) {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -47,21 +48,18 @@ function EmployeePage() {
     useEffect(() => {
         if (isDataLoading) return;
 
-        const authorizedUserJSON = sessionStorage.getItem(constants.authorizedUser);
-
-        let authorizedUser = userData;
         let authorizedUserEmployee = {};
 
-        if (authorizedUserJSON) authorizedUser = JSON.parse(authorizedUserJSON);
+        console.log("user : ", user)
 
-        if (employees.length > 0) authorizedUserEmployee = employees.find((employee) => employee.employeeUser.id == authorizedUser.id);
+        if (employees.length > 0) authorizedUserEmployee = employees.find((employee) => employee.employeeUser.id == user.id);
 
-        if (authorizedUser) handleUserSelect(authorizedUser);
+        if (user) handleUserSelect(user);
         if (authorizedUserEmployee) handleEmployeeSelect(authorizedUserEmployee);
-        
-        console.log(`setIsUserStorageReceived(${!!authorizedUser.id}) user id : ${authorizedUser.id}`);
 
-        setIsUserStorageReceived(!!authorizedUser.id)
+        console.log(`setIsUserStorageReceived(${!!user.id}) user id : ${user.id}`);
+
+        setIsUserStorageReceived(!!user.id)
     }, [isDataLoading])
 
 

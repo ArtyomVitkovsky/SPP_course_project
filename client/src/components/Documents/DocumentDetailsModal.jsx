@@ -102,8 +102,12 @@ function DocumentDetailsModal({ user, documentData = {}, onDataChange = () => { 
             toast.error('Sign document!');
             return;
         }
+        
+        console.log("documentData : ", documentData);
 
         const document = await onSaveClick(documentData);
+
+        console.log("document : ", document);
 
         projectCreationRequestData.document = document;
 
@@ -179,6 +183,7 @@ function DocumentDetailsModal({ user, documentData = {}, onDataChange = () => { 
 
     const onSign = (content) => {
         setIsDocumentSigned(true);
+        documentData.content = content;
     }
 
     return (
@@ -225,6 +230,7 @@ function DocumentDetailsModal({ user, documentData = {}, onDataChange = () => { 
                             </div>
                         </div>
                         <DocumentPreview
+                            user={user}
                             base64Content={documentData?.content}
                             projectCreationRequestData={projectCreationRequestData}
                             onGenerateClick={onGenerateDocumentClick}

@@ -12,40 +12,24 @@ function DocumentViewModal({ user, documentData = {}, selectedDocumentUserStatus
         { name: "Done", isLight: false, width_rem: 6, height_rem: 2.5, onClickAction: () => onDoneClick(documentData) }
     ];
 
-    const OnSignClick = (participant) => {
-        const participantStatus = selectedDocumentUserStatuses.find(status => status.user.id == participant.id);
+    const onDocumentSign = () => {
+        const participantStatus = selectedDocumentUserStatuses.find(status => status.user.id == user.id);
 
-        if (!participantStatus) return;
+        if (!participantStatus) {
+            console.log("!participantStatus")
+            return;
+        }
 
         participantStatus.status = true;
+
+        console.log("onSignClick")
         onSignClick(participantStatus);
-    }
-
-    const getStatusElement = (participant) => {
-
-        const participantStatus = selectedDocumentUserStatuses.find(status => status.user.id == participant.id);
-
-        if (!participantStatus) return;
-
-        return participantStatus.status
-            ? <div className="flex flex-row gap-2 p-1 w-18 h-8 ">
-                <div className={"flex justify-start items-center font-semibold text-base w-full h-full"}>
-                    <span>Signed!</span>
-                </div>
-                <div className="flex w-auto h-full">
-                    <Icon iconName="CheckCircleIcon" iconClassName='group-active:text-zinc-50 transition-all duration-300' textColor="text-green-500"></Icon>
-                </div>
-
-            </div>
-            : <div className="flex flex-row gap-2">
-                <ButtonIcon type="outline" iconName="CheckCircleIcon" textColor="text-green-500" onClick={() => OnSignClick(participant)}></ButtonIcon>
-                <ButtonIcon type="outline" iconName="XCircleIcon" textColor="text-red-500" onClick={() => OnSignClick(participant)}></ButtonIcon>
-            </div>
     }
 
     return (
         <Modal className="overflow-auto" width="auto" title="Document view" onCloseClick={onCloseClick} buttons={buttons}>
-            <DocumentPreview user={user} base64Content={documentData.content}/>
+            <DocumentPreview user={user} base64Content={documentData.content} isRegeneratable={false}
+                onSign={onDocumentSign} />
         </Modal>
     )
 }

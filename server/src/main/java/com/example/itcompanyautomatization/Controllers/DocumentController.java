@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,10 +18,13 @@ import com.Enums.DocumentStatusEnum;
 import com.example.itcompanyautomatization.DTO.DocumentDTO;
 import com.example.itcompanyautomatization.DTO.UserDocumentStatusDTO;
 import com.example.itcompanyautomatization.Models.Document;
+import com.example.itcompanyautomatization.Models.DocumentReceiveNotification;
 import com.example.itcompanyautomatization.Models.DocumentStatus;
 import com.example.itcompanyautomatization.Models.UserDocumentStatus;
+import com.example.itcompanyautomatization.Repositories.Interface.IDocumentNotificationRepository;
 import com.example.itcompanyautomatization.Repositories.Interface.IDocumentRepository;
 import com.example.itcompanyautomatization.Repositories.Interface.IDocumentStatusRepository;
+import com.example.itcompanyautomatization.Repositories.Interface.IProjectCreationRequestRepository;
 import com.example.itcompanyautomatization.Repositories.Interface.IUserDocumentStatusRepository;
 import com.example.itcompanyautomatization.Utils.StringUtilities;
 
@@ -30,15 +34,24 @@ public class DocumentController {
 
     private IDocumentRepository documentRepository;
     private IUserDocumentStatusRepository userDocumentStatusRepository;
+    private IDocumentNotificationRepository documentNotificationRepository;
+    private IProjectCreationRequestRepository projectCreationRequestRepository;
     private IDocumentStatusRepository documentStatusRepository;
+    private SimpMessagingTemplate messagingTemplate;
 
     public DocumentController(
             IDocumentRepository documentRepository,
             IUserDocumentStatusRepository userDocumentStatusRepository,
-            IDocumentStatusRepository documentStatusRepository) {
+            IProjectCreationRequestRepository projectCreationRequestRepository,
+            IDocumentStatusRepository documentStatusRepository,
+            IDocumentNotificationRepository documentNotificationRepository,
+            SimpMessagingTemplate messagingTemplate) {
         this.documentRepository = documentRepository;
         this.userDocumentStatusRepository = userDocumentStatusRepository;
+        this.projectCreationRequestRepository = projectCreationRequestRepository;
         this.documentStatusRepository = documentStatusRepository;
+        this.documentNotificationRepository = documentNotificationRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @PostMapping(path = "/setDocument")
@@ -82,9 +95,12 @@ public class DocumentController {
                 secondUserDocumentStatus = createNewUserDocumentStatus(
                         new UserDocumentStatusDTO(null, documentToSave, documentDTO.receiver, false));
 
+                documentToSave.setStatus(calculateStatus(firstUserDocumentStatus, secondUserDocumentStatus));
             }
 
             Document document = documentRepository.save(documentToSave);
+
+            TryToNotify(document);
 
             if (firstUserDocumentStatus != null)
                 userDocumentStatusRepository.save(firstUserDocumentStatus);
@@ -123,6 +139,40 @@ public class DocumentController {
         return documentStatus;
     }
 
+    private void TryToNotify(Document document) {
+
+        String userId = document.getReceiver().getId();
+        String documentId = document.getId();
+
+        DocumentReceiveNotification notification = documentNotificationRepository.findByUserIdAndDocumentId(userId,
+                documentId);
+
+        if (notification != null) {
+            Optional<UserDocumentStatus> receiverStatus = userDocumentStatusRepository
+                    .findByUserIdAndDocumentId(userId, documentId);
+
+            if (receiverStatus != null && receiverStatus.isPresent()) {
+                if (receiverStatus.get().getStatus()) {
+                    documentNotificationRepository.delete(notification);
+                }
+            }
+
+            System.out.println("DocumentReceiveNotification already exists");
+
+            return;
+        }
+
+        notification = new DocumentReceiveNotification(document.getReceiver(), document);
+
+        documentNotificationRepository.save(notification);
+
+        System.out.println("DocumentReceiveNotification sended with user id : " + userId);
+
+        messagingTemplate.convertAndSend(
+                "/topic/notif/" + userId,
+                "Project creation requested!");
+    }
+
     private DocumentStatus getDefaultStatus() {
         String defaultStatus = DocumentStatusEnum.NotSigned.toString();
         DocumentStatus status = null;
@@ -149,7 +199,17 @@ public class DocumentController {
 
             Document document = existingDocument.get();
 
-            documentRepository.delete(userDocumentStatusRepository, document);
+            String receiverId = document.getReceiver().getId();
+
+            documentRepository.delete(
+                    projectCreationRequestRepository,
+                    userDocumentStatusRepository,
+                    documentNotificationRepository,
+                    document);
+
+            messagingTemplate.convertAndSend(
+                    "/topic/notif/" + receiverId,
+                    "Project creation request deleted!");
             return ResponseEntity.status(200).body("Deleted");
         } catch (Exception e) {
             return ResponseEntity.status(400).body(e.getMessage());
@@ -158,7 +218,8 @@ public class DocumentController {
     }
 
     @PostMapping(path = "/setUserDocumentStatus")
-    public @ResponseBody ResponseEntity<?> setUserDocumentStatus(@RequestBody UserDocumentStatusDTO userDocumentStatusDTO) {
+    public @ResponseBody ResponseEntity<?> setUserDocumentStatus(
+            @RequestBody UserDocumentStatusDTO userDocumentStatusDTO) {
         try {
             UserDocumentStatus userDocumentStatusToSave;
 
@@ -186,6 +247,19 @@ public class DocumentController {
                 userDocumentStatusDTO.status);
 
         return newUserDocumentStatus;
+    }
+
+    @GetMapping(path = "/getNotification")
+    public @ResponseBody ResponseEntity<?> getNotification() {
+        try {
+            messagingTemplate.convertAndSend(
+                    "/topic/notif/ba028443-a987-4464-9b9e-fd2483836b8a",
+                    "Supply request approved");
+
+            return ResponseEntity.status(200).body("");
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
     }
 
     @GetMapping(path = "/getUserDocumentStatuses")
@@ -230,6 +304,28 @@ public class DocumentController {
             });
 
             return ResponseEntity.status(200).body(documentDTOs);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+    }
+
+    @GetMapping(path = "/getDocumentNotifications")
+    public @ResponseBody ResponseEntity<?> getDocumentNotifications() {
+        try {
+            List<UserDocumentStatus> statuses = userDocumentStatusRepository.findAll();
+
+            List<UserDocumentStatusDTO> userDocumentStatusDTOs = new ArrayList<>();
+            statuses.forEach(status -> {
+                userDocumentStatusDTOs.add(
+                        new UserDocumentStatusDTO(
+                                status.getId(),
+                                status.getDocument(),
+                                status.getUser(),
+                                status.getStatus()));
+
+            });
+
+            return ResponseEntity.status(200).body(userDocumentStatusDTOs);
         } catch (Exception e) {
             return ResponseEntity.status(400).body(e.getMessage());
         }

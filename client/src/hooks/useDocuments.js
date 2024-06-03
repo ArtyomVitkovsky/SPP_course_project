@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { getDocuments, setDocument, deleteDocument, getUserDocumentStatuses, setUserDocumentStatus } from "../services/DocumentsService";
+import * as DocumentsService from "../services/DocumentsService";
 import toast from "react-hot-toast";
 
 const useDocuments = (url) => {
     const [documents, setDocuments] = useState([]);
     const [userDocumentStatuses, setUserDocumentStatuses] = useState([]);
+    const [documentNotifications, setDocumentNotifications] = useState([]);
     const [isDocumentsLoading, setIsDocumentsLoading] = useState([]);
 
     const [documentData, setDocumentData] = useState({});
@@ -28,8 +29,7 @@ const useDocuments = (url) => {
 
     const handleDocumentDataSave = async (document) => {
         try {
-            const result = await setDocument(document);
-
+            const result = await DocumentsService.setDocument(document);
             getData();
 
             return result;
@@ -40,7 +40,7 @@ const useDocuments = (url) => {
 
     const handleDocumentDelete = async (document) => {
         try {
-            await deleteDocument(document);
+            await DocumentsService.deleteDocument(document);
             getData();
         }
         catch (error) {
@@ -51,7 +51,7 @@ const useDocuments = (url) => {
     const handleDocumentSign = async (userDocumentData) => {
         try {
             console.log("handleDocumentSign : ", userDocumentData);
-            await setUserDocumentStatus(userDocumentData);
+            await DocumentsService.setUserDocumentStatus(userDocumentData);
             getData();
         }
         catch (error) {
@@ -60,13 +60,22 @@ const useDocuments = (url) => {
     }
 
     const getAllDocuments = async () => {
-        const result = await getDocuments();
+        const result = await DocumentsService.getDocuments();
         setDocuments(result);
     }
 
     const getAllUserDocumentStatuses = async () => {
-        const result = await getUserDocumentStatuses();
+        const result = await DocumentsService.getUserDocumentStatuses();
         setUserDocumentStatuses(result);
+    }
+
+    const getAllDocumentNotifications = async () => {
+        try {
+            const result = await DocumentsService.getDocumentNotifications();
+            setDocumentNotifications(result);
+        } catch (error) {
+            toast.error(error?.message || 'Unknown error');
+        }
     }
 
     const getData = async () => {
@@ -74,6 +83,7 @@ const useDocuments = (url) => {
         try {
             await getAllDocuments();
             await getAllUserDocumentStatuses();
+            await getAllDocumentNotifications();
 
         } catch (error) {
             toast.error(error?.message || 'Unknown error');
@@ -92,6 +102,8 @@ const useDocuments = (url) => {
         documentData,
         userDocumentStatuses,
         selectedDocumentStatuses,
+        documentNotifications,
+        getData,
         handleDocumentDataChange,
         handleDocumentSelect,
         handleDocumentDataSave,
