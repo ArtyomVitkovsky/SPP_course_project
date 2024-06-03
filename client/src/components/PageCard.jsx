@@ -8,7 +8,7 @@ function PageCard({ headerText, children }) {
             children.forEach((child, i) => {
                 if (children.indexOf(child) == 0) {
                     elements.push(
-                        <div key={i} className='w-60 rounded-b-3xl'>
+                        <div key={i} className='w-60 rounded-b-3xl overflow-hidden'>
                             {child}
                         </div>
                     )
@@ -34,12 +34,8 @@ function PageCard({ headerText, children }) {
     }
 
     return (
-        <div className='flex-1 flex-col justify-center 
-            bg-white
-            rounded-3xl
-            shadow-md
-            mx-56'>
-            <div className='flex justify-center rounded-t-3xl w-full py-3 bg-blue-400'>
+        <div className='flex-1 flex-col justify-center bg-white rounded-3xl shadow-md mx-56'>
+            <div className='flex justify-center w-full rounded-t-3xl py-3 bg-sky-900'>
                 <div className='flex items-center font-semibold text-gray-100 text-3xl'>
                     <span className='align-middle'>{headerText}</span>
                 </div>
@@ -48,9 +44,6 @@ function PageCard({ headerText, children }) {
             <div className='flex flex-row w-full'>
                 {getContent()}
             </div>
-
-
-
         </div>
     )
 }

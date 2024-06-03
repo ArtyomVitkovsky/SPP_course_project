@@ -5,9 +5,9 @@ function Modal({ width = "30rem", title, children, onCloseClick, buttons = [] })
     return (
         <div>
             <div className="flex items-center justify-center absolute inset-0">
-                <div className="min-w-[600px] bg-zinc-100 rounded-lg flex flex-col z-50" style={{ width: `${width}` }}>
-                    <div className="flex justify-between px-6 py-6 border-b-[1px] bg-blue-400 rounded-t-lg">
-                        <h3 className="uppercase text-slate-50 text-lg font-semibold">{title}</h3>
+                <div className="min-w-[600px] bg-white rounded-3xl flex flex-col z-50" style={{ width: `${width}` }}>
+                    <div className="flex justify-between p-6 rounded-t-3xl bg-sky-900">
+                        <h3 className="uppercase text-zinc-100 text-lg font-semibold">{title}</h3>
                         <ButtonIcon iconName="XMarkIcon" type="bare" color="text-slate-50" onClick={(e) => onCloseClick(e)} />
                     </div>
 
@@ -15,14 +15,12 @@ function Modal({ width = "30rem", title, children, onCloseClick, buttons = [] })
                         {children}
                     </div>
 
-                    <div className="flex justify-end px-6 py-6 border-t-[1px] gap-3">
+                    <div className="flex justify-end p-6 border-t gap-3">
                         {
                             buttons.map((button, i) => <Button
                                 key={i}
                                 name={button.name}
                                 isLight={button.isLight}
-                                width_rem={button.width_rem}
-                                height_rem={button.height_rem}
                                 onClickAction={() => button.onClickAction()}
                             />)
                         }

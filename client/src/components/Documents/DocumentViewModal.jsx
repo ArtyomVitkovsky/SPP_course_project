@@ -1,9 +1,4 @@
 import Modal from "../Modal"
-// import FileViewer from 'react-file-viewer';
-import { getDocument } from "../../utilities/getDocumentFromBase64"
-import ButtonIcon from "../ButtonIcon";
-import Icon from "../Icon";
-import { useEffect } from "react";
 import DocumentPreview from "./DocumentPreview";
 
 function DocumentViewModal({ user, documentData = {}, selectedDocumentUserStatuses = [], onSignClick = () => { }, onDoneClick = () => { }, onCloseClick = () => { } }) {

@@ -1,5 +1,4 @@
-import { useState } from "react";
-import Icon from "../Icon"; 
+import Icon from "../Icon";
 
 function MenuItem({ name, text, isSelected, onClickParentHandler, iconName, iconClassName }) {
     const onClickHandler = () => {
@@ -7,18 +6,17 @@ function MenuItem({ name, text, isSelected, onClickParentHandler, iconName, icon
     }
 
     return (
+        <div
+            className={'flex gap-2 items-center px-8 py-3 rounded-3xl cursor-pointer transition-all duration-300 ' + (isSelected ? 'bg-sky-100' : 'hover:bg-sky-50')}
+            onClick={onClickHandler}
+        >
 
-        <div className={isSelected
-            ? "flex gap-2 items-center px-8 rounded-md hover:bg-blue-50 transition ease-in-out w-full h-12"
-            : "flex gap-2 items-center px-8 rounded-md hover:bg-blue-50 transition ease-in-out w-full h-12"}
-            onClick={onClickHandler}>
-            <div className="flex w-5 h-5">
+            <div className={"flex w-5 h-5 " + (isSelected ? 'text-zinc-800' : 'text-zinc-600')}>
                 <Icon iconName={iconName} iconClassName={iconClassName}></Icon>
             </div>
-            <div className={isSelected
-                ? "flex justify-start items-center font-bold text-zinc-900 text-base w-full h-full"
-                : "flex justify-start items-center font-semibold text-zinc-400 text-base w-full h-full"}>
-                <span className="align-middle cursor-default">{text}</span>
+
+            <div className={'flex ' + (isSelected ? 'text-zinc-800 font-bold' : 'text-zinc-600')}>
+                {text}
             </div>
 
         </div>

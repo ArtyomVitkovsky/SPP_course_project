@@ -71,7 +71,7 @@ function AuthorizationPage({ onUserChanged }) {
                     : <div className="w-full h-full">
                         <div className="flex flex-col gap-4 w-full h-full items-center justify-center">
                             <div className="flex justify-center items-center w-[300px] h-12">
-                                <span className="text-blue-500 font-semibold text-2xl">Authorization</span>
+                                <span className="text-sky-900 font-semibold text-2xl">Authorization</span>
                             </div>
                             <div className="flex flex-col gap-4 min-w-[300px]">
                                 <InputField InputField type={"email"} label={"Email"} placeHolder={"Email"} required={true}
@@ -80,12 +80,12 @@ function AuthorizationPage({ onUserChanged }) {
                                 <InputField InputField type={"password"} label={"Password"} placeHolder={"Password"} required={true}
                                     value={userData.password} onValueChange={(e) => onDataChange(e, "password")}>
                                 </InputField >
-                                <div className="mt-1 w-full h-[40px]">
+                                <div className="mt-1 w-full flex justify-end">
                                     <Button name={"Sign in"} isLight={false} onClickAction={authorize}></Button>
                                 </div>
                                 <div className="flex items-center justify-center mt-1 w-full">
-                                    <span className="text-blue-500 font-semibold text-sm underline cursor-pointer"
-                                        onClick={navigateToRegistration}>don't have account ?</span>
+                                    <span className="text-sky-900 font-semibold text-sm underline cursor-pointer"
+                                        onClick={navigateToRegistration}>Don't have an account?</span>
                                 </div>
                             </div>
 

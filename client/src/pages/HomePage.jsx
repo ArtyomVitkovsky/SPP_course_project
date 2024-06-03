@@ -35,15 +35,10 @@ function HomePage() {
     return (
         <div className="py-10 h-full">
             <PageCard headerText={headerText}>
-
                 <VerticalMenu menuItems={menuItems} presettedValue={selectedMenuItem} onItemSelectAction={setSelecteMenuItemHandler}></VerticalMenu>
-
                 <Outlet />
-
             </PageCard>
-
             <Toaster />
-
         </div>
     )
 }

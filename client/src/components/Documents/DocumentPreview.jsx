@@ -86,14 +86,22 @@ function DocumentPreview({ user, base64Content, projectCreationRequestData = {},
 
     return (
         <div>
-            <div className='flex flex-row gap-2 mb-2'>
-                {isRegeneratable && <div className='w-full h-8'><Button name={'Generate Document'} isLight={true} onClickAction={generateDocumentClick} /></div>}
-                <div className='w-full h-8'><Button name={'Download Document'} isLight={true} onClickAction={download} /></div>
+            <div className='flex justify-end gap-1 mb-2'>
+                {
+                    isRegeneratable && <div className=''>
+                        <Button name={'Generate Document'} isLight={true} isBordered={true} onClickAction={generateDocumentClick} />
+                    </div>
+                }
+                <div className=''>
+                    <Button name={'Download Document'} isLight={true} isBordered={true} onClickAction={download} />
+                </div>
             </div>
             <div className='bg-white rounded-lg flex flex-col min-w-[30rem]'>
                 <div className='flex justify-between p-3 border-b-[1px]'>
                     <h3 className='text-xl font-semibold'>Document preview</h3>
-                    <ButtonIcon iconName='XMarkIcon' type='outline' onClick={handleDeleteDocument} />
+                    {
+                        currentFile && <ButtonIcon iconName='XMarkIcon' type='outline' onClick={handleDeleteDocument} />
+                    }
                 </div>
                 <div className='w-full h-12 p-3 mb-3 '>
                     {

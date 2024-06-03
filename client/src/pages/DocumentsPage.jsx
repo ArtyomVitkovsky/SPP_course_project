@@ -199,8 +199,8 @@ function DocumentsPage({ user, isSendedDocuments }) {
                 {
                     isSendedDocuments
                         ?
-                        <div className="w-full bg-blue-400 p-2 border-solid rounded-b-lg">
-                            <div className="w-[150px] h-full">
+                        <div className="w-full bg-sky-900 p-4 rounded-b-3xl">
+                            <div className="flex justify-end">
                                 <Button
                                     name="Add Document"
                                     isLight={true}
@@ -211,13 +211,15 @@ function DocumentsPage({ user, isSendedDocuments }) {
                         </div>
                         : null
                 }
-                <Table data={getDocuments()}
-                    columns={columns}
-                    extraColumns={extraColumns}
-                    extraColumnsData={getExtraColumns()}
-                    actionsColumns={getActionColumns()}
-                    columnsToExclude={columnsToExclude}>
-                </Table>
+                <div className="px-2 mt-3">
+                    <Table data={getDocuments()}
+                        columns={columns}
+                        extraColumns={extraColumns}
+                        extraColumnsData={getExtraColumns()}
+                        actionsColumns={getActionColumns()}
+                        columnsToExclude={columnsToExclude}>
+                    </Table>
+                </div>
 
                 {
                     isShowEditModal &&

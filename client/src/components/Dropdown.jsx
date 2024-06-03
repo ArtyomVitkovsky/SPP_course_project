@@ -23,7 +23,7 @@ function Dropdown({ index, label, placeHolder, value, values = [], valuesToExclu
     }
 
     useEffect(() => {
-        
+
         if (valuesToExclude.length) {
             const valuePerKey = valuesToExclude.reduce((valuePerKey, value) => {
                 valuePerKey[value.key] = value;
@@ -38,11 +38,10 @@ function Dropdown({ index, label, placeHolder, value, values = [], valuesToExclu
 
     const dropDownValuesStyle = 'absolute z-10 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow w-44';
     const dropDownButtonStyle =
-        'flex justify-between w-full max-w-[200px] text-white bg-blue-400' +
-        'hover: bg-blue-500' +
-        'focus: bg-blue-500 focus: outline-none focus: ring-blue-300' +
+        'flex justify-between w-full text-white bg-blue-400 ' +
+        'hover: bg-sky-900 ' +
+        'focus: bg-blue-500 focus:outline-none focus:ring-blue-300 ' +
         'font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center'
-
 
     return (
         <div className={customClassName}>

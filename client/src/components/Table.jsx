@@ -1,7 +1,8 @@
-import { useEffect } from "react";
 import ButtonIcon from "./ButtonIcon";
 
 const Table = ({ data = [], columns = [], extraColumns = [], extraColumnsData = [], actionsColumns = [], columnsToExclude = [], columnsToMark = [] }) => {
+  const resultColumns = columns.filter(column => !columnsToExclude.includes(column));
+
   return (
     <div className="flex flex-col h-[calc(100vh-15rem)]">
       <div className="flex-grow overflow-y-auto">
@@ -9,17 +10,15 @@ const Table = ({ data = [], columns = [], extraColumns = [], extraColumnsData = 
           <thead>
             <tr className="text-xs">
               {
-                columns.map((column, i) => {
-                  return !columnsToExclude.includes(column)
-                    ? <th
-                      key={i}
-                      className={
-                        "uppercase text-left sticky top-0 py-3 px-2 bg-zinc-50 text-zinc-700 " +
-                        (i === 0 ? "rounded-l-lg" : (i === columns.length - 1) ? "rounded-r-lg" : "")
-                      }>
-                      {column.replace("_", " ")}
-                    </th>
-                    : null;
+                resultColumns.map((column, i) => {
+                  return <th
+                    key={i}
+                    className={
+                      "uppercase text-left sticky top-0 py-3 px-2 bg-zinc-50 text-zinc-700 " +
+                      (i === 0 ? "rounded-l-lg" : (i === columns.length - 1) ? "rounded-r-lg" : "")
+                    }>
+                    {column.replace("_", " ")}
+                  </th>
                 })
               }
               {
@@ -29,7 +28,7 @@ const Table = ({ data = [], columns = [], extraColumns = [], extraColumnsData = 
                       key={i}
                       className={
                         "uppercase text-left sticky top-0 py-3 px-2 bg-zinc-50 text-zinc-700 " +
-                        (i === 0 ? "rounded-l-lg" : (i === extraColumns.length - 1) ? "rounded-r-lg" : "")
+                        (resultColumns.length === 0 && i === 0 ? "rounded-l-lg" : (actionsColumns.length === 0 && i === extraColumns.length - 1) ? "rounded-r-lg" : "")
                       }>
                       {extraColumn.replace("_", " ")}
                     </th>
@@ -42,7 +41,7 @@ const Table = ({ data = [], columns = [], extraColumns = [], extraColumnsData = 
                     key={i}
                     className={
                       "uppercase text-left sticky top-0 py-3 px-2 bg-zinc-50 text-zinc-700 " +
-                      (i === 0 ? "rounded-l-lg" : (i === actionsColumns.length - 1) ? "rounded-r-lg" : "")
+                      ((i === actionsColumns.length - 1) ? "rounded-r-lg" : "")
                     }>
                   </th>
                 })

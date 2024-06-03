@@ -102,7 +102,7 @@ function DocumentDetailsModal({ user, documentData = {}, onDataChange = () => { 
             toast.error('Sign document!');
             return;
         }
-        
+
         console.log("documentData : ", documentData);
 
         const document = await onSaveClick(documentData);
@@ -211,7 +211,7 @@ function DocumentDetailsModal({ user, documentData = {}, onDataChange = () => { 
                                 customClassName='w-full my-4'
                                 onValueChange={onDropDownValueChange}
                             />
-                            <div className='flex flex-col gap-4 w-full border-b-2 pb-3 my-3'>
+                            <div className={'flex flex-col gap-4 w-full pb-3 my-3 ' + (selectedEmployees.length > 0 ? 'border-b' : '')}>
                                 <SelectableSearchBox
                                     values={getEmployeeNames(employees)}
                                     valuesToExclude={Object.values(valuesToExclude)}
@@ -221,8 +221,8 @@ function DocumentDetailsModal({ user, documentData = {}, onDataChange = () => { 
                             <div className='flex flex-col gap-2 w-full'>
                                 {
                                     selectedEmployees.map((employee, i) => {
-                                        return <div key={i} className='flex flex-row justify-between'>
-                                            <span>{employee.value}</span>
+                                        return <div key={i} className='flex justify-between'>
+                                            <span className='text-sm'>{employee.value}</span>
                                             <ButtonIcon iconName='XMarkIcon' type='outline' onClick={() => handleDeleteEmployee(employee)} />
                                         </div>
                                     })

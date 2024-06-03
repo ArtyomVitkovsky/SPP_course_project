@@ -87,12 +87,15 @@ function ProjectsPage({ user }) {
                 <span>Loading...</span>
             </div>
             : <div className="w-full h-full">
-                <Table data={getProjects()}
-                    columns={columns}
-                    extraColumns={extraColumns}
-                    extraColumnsData={getExtraColumns()}
-                    columnsToExclude={columnsToExclude}>
-                </Table>
+                <div className="bg-sky-900 p-6 rounded-b-3xl"></div>
+                <div className="px-2 mt-3">
+                    <Table data={getProjects()}
+                        columns={columns}
+                        extraColumns={extraColumns}
+                        extraColumnsData={getExtraColumns()}
+                        columnsToExclude={columnsToExclude}>
+                    </Table>
+                </div>
             </div >
     )
 }

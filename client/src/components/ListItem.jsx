@@ -1,5 +1,3 @@
-import Avatar from "./Avatar";
-
 function ListItem({ props }) {
 
     const onClickHandler = () => {

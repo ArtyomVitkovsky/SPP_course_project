@@ -160,7 +160,7 @@ function RegistrationPage({ onUserChanged }) {
                     : <div className='w-full h-full'>
                         <div className='flex flex-col gap-4 w-full h-full items-center justify-center'>
                             <div className='flex justify-center items-center w-[300px] h-12'>
-                                <span className='text-blue-500 font-semibold text-2xl'>Registration</span>
+                                <span className='text-sky-900 font-semibold text-2xl'>Registration</span>
                             </div>
                             <div className='flex flex-col gap-4 min-w-[300px]'>
                                 <Dropdown
@@ -189,11 +189,11 @@ function RegistrationPage({ onUserChanged }) {
                                     </InputField>
                                     {getLayout()}
                                 </div>
-                                <div className='mt-1 w-full h-[40px]'>
+                                <div className='mt-1 w-full flex justify-end'>
                                     <Button name={'Sign up'} isLight={false} onClickAction={signUp}></Button>
                                 </div>
                                 <div className='flex items-center justify-center mt-1 w-full'>
-                                    <span className='text-blue-500 font-semibold text-sm underline cursor-pointer' onClick={navigateToAuth}>already have account ?</span>
+                                    <span className='text-sky-900 font-semibold text-sm underline cursor-pointer' onClick={navigateToAuth}>Already have an account?</span>
                                 </div>
                             </div>
 

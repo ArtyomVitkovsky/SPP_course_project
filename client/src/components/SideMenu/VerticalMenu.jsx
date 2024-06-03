@@ -30,8 +30,10 @@ function VerticalMenu({ menuItems, presettedValue, onItemSelectAction }) {
     };
 
     return (
-        <div className="flex flex-col gap-2 w-full h-full min-h-[750px] p-2 border-r-2 border-solid border-blue-50 border-rad">
-            {getMenuItems()}
+        <div className="relative before:block before:bg-sky-900 before:absolute before:h-[100px] before:w-full inset-0">
+            <div className="flex flex-col gap-2 w-full h-full min-h-[750px] rounded-t-3xl relative bg-white p-3">
+                {getMenuItems()}
+            </div>
         </div>
     )
 }
