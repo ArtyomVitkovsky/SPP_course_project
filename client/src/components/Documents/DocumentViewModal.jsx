@@ -15,14 +15,10 @@ function DocumentViewModal({ user, documentData = {}, selectedDocumentUserStatus
     const onDocumentSign = () => {
         const participantStatus = selectedDocumentUserStatuses.find(status => status.user.id == user.id);
 
-        if (!participantStatus) {
-            console.log("!participantStatus")
-            return;
-        }
+        if (!participantStatus) return;
 
         participantStatus.status = true;
 
-        console.log("onSignClick")
         onSignClick(participantStatus);
     }
 

@@ -13,24 +13,13 @@ function EmployeePage({ user }) {
     const location = useLocation();
 
     const {
-        isUsersLoading,
-        userRoles,
-        users,
-        userData,
-        handleUserDataChange,
-        handleUserSelect,
-        handleUserDataSave,
-        handleUserDelete
+        isUsersLoading, userRoles, users, userData,
+        handleUserDataChange, handleUserSelect, handleUserDataSave, handleUserDelete
     } = useUsers();
 
     const {
-        isEmployeesLoading,
-        employees,
-        employeeData,
-        employeeStatuses,
-        handleEmployeeDataChange,
-        handleEmployeeSelect,
-        handleEmployeeDataSave
+        isEmployeesLoading, employees, employeeData, employeeStatuses,
+        handleEmployeeDataChange, handleEmployeeSelect, handleEmployeeDataSave
     } = useEmployees();
 
     const [isLoading, setIsLoading] = useState(true);

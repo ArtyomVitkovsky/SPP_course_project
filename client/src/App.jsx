@@ -8,6 +8,7 @@ import RegistrationPage from './pages/Authorization/RegistrationPage'
 import AuthorizationPage from './pages/Authorization/AuthorizationPage'
 import ClientPage from './pages/ClientPage'
 import EmployeePage from './pages/EmployeePage'
+import ProjectsPage from './pages/ProjectsPage'
 import * as constants from './utilities/constants'
 import { StompSessionProvider } from "react-stomp-hooks";
 
@@ -28,8 +29,8 @@ function App() {
             <BrowserRouter>
                 <Routes>
                     <Route path='/' element={<RegistrationPage />}></Route>
-                    <Route path='/registration' element={<RegistrationPage onUserChanged={onUserSelect}/>}></Route>
-                    <Route path='/authorization' element={<AuthorizationPage onUserChanged={onUserSelect}/>}></Route>
+                    <Route path='/registration' element={<RegistrationPage onUserChanged={onUserSelect} />}></Route>
+                    <Route path='/authorization' element={<AuthorizationPage onUserChanged={onUserSelect} />}></Route>
                     <Route path='/clientPage' element={<ClientPage user={user}></ClientPage>}>
                         <Route path='/clientPage/sended' element={
                             <DocumentsPage user={user} isSendedDocuments={true} />
@@ -37,14 +38,14 @@ function App() {
                         <Route path='/clientPage/inbox' element={
                             <DocumentsPage user={user} isSendedDocuments={false} />
                         }></Route>
-                        <Route path='/clientPage/projects' element={<DocumentsPage />}></Route>
+                        <Route path='/clientPage/projects' element={<ProjectsPage user={user} />}></Route>
                     </Route>
                     <Route path='/employeePage' element={<EmployeePage user={user} />}>
                         <Route path='/employeePage/inbox' element={
                             <DocumentsPage user={user} isSendedDocuments={false}
                             />
                         }></Route>
-                        <Route path='/employeePage/projects' element={<DocumentsPage />}></Route>
+                        <Route path='/employeePage/projects' element={<ProjectsPage user={user} />}></Route>
                     </Route>
                     <Route path='/home' element={<HomePage />}>
                         <Route path='/home/users' element={<UsersPage />}></Route>

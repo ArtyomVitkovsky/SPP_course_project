@@ -81,24 +81,20 @@ function DocumentsPage({ user, isSendedDocuments }) {
     const onSignClick = async (userDocumentStatus) => {
         await handleDocumentSign(userDocumentStatus);
 
-        console.log("userDocumentStatus : ", userDocumentStatus);
-        console.log("projectCreationRequests : ", projectCreationRequests);
-
         const projectCreationRequest = projectCreationRequests.find(
             request => request.document.id == userDocumentStatus.document.id
                 && request.manager.employeeUser.id == userDocumentStatus.user.id
         );
 
-        console.log("projectCreationRequest : ", projectCreationRequest);
+        const projectStatus = projectStatuses.find(status => status.status == 'Active');
 
         const project = {
             client: projectCreationRequest.client,
             manager: projectCreationRequest.manager,
             employees: projectCreationRequest.employees,
-            name: projectCreationRequest.name
+            name: projectCreationRequest.name,
+            status: projectStatus
         };
-
-        console.log("project : ", project);
 
         handleProjectDataSave(project);
     }
@@ -153,8 +149,6 @@ function DocumentsPage({ user, isSendedDocuments }) {
         documents.forEach((document) => {
             if (isSendedDocuments ? document.sender.id == user.id : document.receiver.id == user.id) {
                 const participants = [document.sender, document.receiver];
-
-                console.log("participants : ", participants);
 
                 let otherUsersCount = 0;
                 participantAvatars[document.id] =
